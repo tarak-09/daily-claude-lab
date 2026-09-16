@@ -74,9 +74,8 @@ jobs:
       # Only a hint — the decide phase may override it on quality grounds.
       CREATE_PERCENT: "35"
 
-      # Scratch checkout for the project being built. Deliberately outside this
-      # repo's workspace so nothing can leak into a lab commit.
-      WORKDIR: ${{ runner.temp }}/project
+      # NOTE: WORKDIR is set in the "Resolve profile owner" step below, not
+      # here — the `runner` context is not available in a job-level env block.
 
     steps:
       # This repo, for the RUNS.md ledger at the end.
@@ -119,6 +118,9 @@ jobs:
           # you'd rather the commits appear under your own name.
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Scratch checkout for the project being built — deliberately outside
+          # this repo's workspace so nothing can leak into a lab commit.
+          echo "WORKDIR=$RUNNER_TEMP/project" >> "$GITHUB_ENV"
 
       # ---------------------------------------------------------------
       # PHASE 1 — portfolio digest.
