@@ -55,9 +55,11 @@ permissions:
 jobs:
   engineering-lab:
     runs-on: ubuntu-latest
-    # Real implementation + dependency installs + test runs. Raise this if
-    # builds start getting truncated.
-    timeout-minutes: 60
+    # Real implementation + dependency installs + test runs. This is the outer
+    # backstop only — each model call has its own, shorter `timeout` so a slow
+    # phase fails the step and still reaches the ledger. Keep this comfortably
+    # above the sum of those, or it cancels the job and defeats them.
+    timeout-minutes: 75
 
     env:
       # gh reads GH_TOKEN automatically — the PAT for your profile.
@@ -317,7 +319,17 @@ jobs:
           EOF
           # -m pro favours reasoning quality over cost; set GEMINI_MODEL to
           # flash in the env block above for cheaper, faster daily runs.
-          gemini -p "$(cat "$RUNNER_TEMP/decide-prompt.txt")" --approval-mode=yolo -m "$GEMINI_MODEL"
+          #
+          # `timeout` here rather than relying on the job's timeout-minutes: a
+          # job-level timeout CANCELS the job, and a cancelled job skips even
+          # `if: always()` steps, so the ledger never records the run. A step
+          # that fails on its own leaves the rest of the pipeline intact.
+          #
+          # stream-json makes the CLI emit tool calls as they happen. Without it
+          # `-p` buffers everything to the end, so a run that hangs produces no
+          # output at all and there is nothing to debug.
+          timeout 15m gemini -p "$(cat "$RUNNER_TEMP/decide-prompt.txt")" \
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
 
           # Validate. A missing or malformed decision means the tooling broke —
           # a failure, distinct from Gemini deliberately choosing to skip.
@@ -418,7 +430,8 @@ jobs:
           Report honestly. If the tests failed, say so — the workflow will refuse to push,
           which is the correct outcome.
           EOF
-          gemini -p "$(cat "$RUNNER_TEMP/build-prompt.txt")" --approval-mode=yolo -m "$GEMINI_MODEL"
+          timeout 40m gemini -p "$(cat "$RUNNER_TEMP/build-prompt.txt")" \
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
 
       # ---------------------------------------------------------------
       # PHASE 3b — improve an existing project. ONE improvement, no rewrites.
@@ -468,7 +481,8 @@ jobs:
           Report honestly. If the tests failed, say so — the workflow will refuse to push,
           which is the correct outcome.
           EOF
-          gemini -p "$(cat "$RUNNER_TEMP/improve-prompt.txt")" --approval-mode=yolo -m "$GEMINI_MODEL"
+          timeout 40m gemini -p "$(cat "$RUNNER_TEMP/improve-prompt.txt")" \
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
 
       # ---------------------------------------------------------------
       # PHASE 4 — quality gates. Deterministic; the model gets no vote here.

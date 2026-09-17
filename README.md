@@ -61,7 +61,7 @@ Everything worth changing lives at the top of
 | `PORTFOLIO_MIN` | `10` | Below this, the create chance gets +25 points. |
 | `PORTFOLIO_MAX` | `15` | At this count, `create` is disallowed outright. |
 | `TOPIC` | `daily-gemini-project` | Defines the portfolio. Changing it orphans every existing project. |
-| `timeout-minutes` | `60` | Raise if builds get truncated. |
+| `timeout-minutes` | `75` | Outer backstop. Each model call has its own shorter `timeout`; raise those first. |
 | `GEMINI_MODEL` | `pro` | Model for all three `gemini -p` calls. `flash` is cheaper and faster. |
 | `GOOGLE_CLOUD_LOCATION` | `global` | Vertex location. `global` routes to nearest capacity; `us-central1` pins one region. |
 
