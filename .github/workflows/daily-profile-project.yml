@@ -71,6 +71,12 @@ jobs:
       # The model the three `gemini -p` calls use. `pro` is the reasoning model;
       # `flash` is markedly cheaper and faster if daily cost becomes a concern.
       GEMINI_MODEL: pro
+      # The Gemini CLI refuses to run in an untrusted directory, and silently
+      # downgrades --approval-mode=yolo to "default" first. There is no way to
+      # mark a folder trusted without an interactive prompt, so a headless run
+      # needs this. Safe here: the runner is ephemeral and the only checkouts
+      # are this repo and the scratch project the build phase creates itself.
+      GEMINI_CLI_TRUST_WORKSPACE: "true"
 
       # The topic that defines the portfolio. Changing it orphans every project
       # created so far — keep it stable.
