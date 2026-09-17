@@ -328,8 +328,14 @@ jobs:
           # stream-json makes the CLI emit tool calls as they happen. Without it
           # `-p` buffers everything to the end, so a run that hangs produces no
           # output at all and there is nothing to debug.
+          # --include-directories is not optional: the CLI sandboxes file writes
+          # to the workspace, and every prompt below asks for its output file in
+          # $RUNNER_TEMP, which sits outside it. Without this, write_file is
+          # rejected and the run only survives if the model thinks to shell out
+          # with `echo >` instead — which it did once, but is not a design.
           timeout 15m gemini -p "$(cat "$RUNNER_TEMP/decide-prompt.txt")" \
-            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json \
+            --include-directories "$RUNNER_TEMP"
 
           # Validate. A missing or malformed decision means the tooling broke —
           # a failure, distinct from Gemini deliberately choosing to skip.
@@ -431,7 +437,8 @@ jobs:
           which is the correct outcome.
           EOF
           timeout 40m gemini -p "$(cat "$RUNNER_TEMP/build-prompt.txt")" \
-            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json \
+            --include-directories "$RUNNER_TEMP"
 
       # ---------------------------------------------------------------
       # PHASE 3b — improve an existing project. ONE improvement, no rewrites.
@@ -482,7 +489,8 @@ jobs:
           which is the correct outcome.
           EOF
           timeout 40m gemini -p "$(cat "$RUNNER_TEMP/improve-prompt.txt")" \
-            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json
+            --approval-mode=yolo -m "$GEMINI_MODEL" --output-format stream-json \
+            --include-directories "$RUNNER_TEMP"
 
       # ---------------------------------------------------------------
       # PHASE 4 — quality gates. Deterministic; the model gets no vote here.
