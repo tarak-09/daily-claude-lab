@@ -12,3 +12,4 @@ rather than manufacturing activity.
 | 2026-09-19 | create | secret-sweeper | Implemented pattern matching for known secret types (AWS, RSA, etc.) and Shannon entropy calculation to detect potential unknown secrets, with customizable ignoring using pathspec. | 0fc62a8 | success |
 | 2026-09-20 | improve | endpoint-pulse | Added SQLite persistence for tracking health check results and a new 'history' subcommand to view latency and failure rate trends. | d27b3e7 | success |
 | 2026-09-21 | create | event-spooler | Built a FastAPI service that reliably appends incoming events to a WAL and uses a concurrent background task to periodically compress batches of events into gzip archives based on size or time. | 0d80fe6 | success |
+| 2026-09-22 | create | circuit-proxy | Built a rolling-window circuit breaker with CLOSED, OPEN, and HALF-OPEN states, configurable thresholds, and full aiohttp integration. | 545eb7f | success |
