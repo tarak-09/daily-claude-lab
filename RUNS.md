@@ -15,3 +15,4 @@ rather than manufacturing activity.
 | 2026-09-22 | create | circuit-proxy | Built a rolling-window circuit breaker with CLOSED, OPEN, and HALF-OPEN states, configurable thresholds, and full aiohttp integration. | 545eb7f | success |
 | 2026-09-23 | create | env-shield | Implemented schema validation CLI with TypeScript and Zod, featuring .env support and process spawning. | d63ed58 | success |
 | 2026-09-24 | improve | event-spooler | Added an asynchronous Forwarder task that monitors the data directory for compressed batches and reliably POSTs them to a configured upstream webhook using httpx, featuring exponential backoff for transient failures. | f6ea4b5 | success |
+| 2026-09-25 | improve | circuit-proxy | Added a concurrent management API and Prometheus metrics exporter on a dedicated port with /metrics, /api/state, and /api/reset endpoints. | 0e49bc6 | success |
