@@ -18,3 +18,4 @@ rather than manufacturing activity.
 | 2026-09-25 | improve | circuit-proxy | Added a concurrent management API and Prometheus metrics exporter on a dedicated port with /metrics, /api/state, and /api/reset endpoints. | 0e49bc6 | success |
 | 2026-09-26 | improve | circuit-proxy | Replaced the single upstream URL configuration with a list of backend nodes, introducing round-robin load balancing with transparent skipping of open circuit breakers. | 7cce97f | success |
 | 2026-09-27 | create | memo-run | Implemented a TypeScript CLI that uses glob patterns to hash inputs and cache command standard output and exit codes. | 64395ac | success |
+| 2026-09-28 | create | chaos-proxy | Implemented an asynchronous TCP proxy with a CLI and configurable fault injection using decoupled read/write queues to correctly model network conditions. | 0a6cf5a | success |
