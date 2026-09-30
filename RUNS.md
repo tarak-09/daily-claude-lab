@@ -20,3 +20,4 @@ rather than manufacturing activity.
 | 2026-09-27 | create | memo-run | Implemented a TypeScript CLI that uses glob patterns to hash inputs and cache command standard output and exit codes. | 64395ac | success |
 | 2026-09-28 | create | chaos-proxy | Implemented an asynchronous TCP proxy with a CLI and configurable fault injection using decoupled read/write queues to correctly model network conditions. | 0a6cf5a | success |
 | 2026-09-29 | create | dag-runner | Implemented a complete Python CLI using graphlib and asyncio to parse task dependencies, check for cycles, and run non-dependent commands concurrently while multiplexing prefixed output. | 6a14068 | success |
+| 2026-09-30 | create | append-db | Implemented the core log-structured database, an in-memory KeyDir index, compaction to reclaim space, and a CLI. | e104620 | success |
