@@ -22,3 +22,4 @@ rather than manufacturing activity.
 | 2026-09-29 | create | dag-runner | Implemented a complete Python CLI using graphlib and asyncio to parse task dependencies, check for cycles, and run non-dependent commands concurrently while multiplexing prefixed output. | 6a14068 | success |
 | 2026-09-30 | create | append-db | Implemented the core log-structured database, an in-memory KeyDir index, compaction to reclaim space, and a CLI. | e104620 | success |
 | 2026-10-01 | create | gossip-mesh | Built a Python asyncio daemon using DatagramProtocol for P2P state exchange with failure detection and a read-only HTTP API. | cf2230f | success |
+| 2026-10-02 | improve | chaos-proxy | Added an asynchronous HTTP management API using 'aiohttp' to dynamically view and update fault injection parameters at runtime without restarting the proxy. | b8b0473 | success |
