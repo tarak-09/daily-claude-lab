@@ -30,3 +30,4 @@ rather than manufacturing activity.
 | 2026-10-07 | improve | append-db | Added transparent value compression using zlib with a FLAG_COMPRESSED bit, reducing disk footprint for compressible payloads. | c411f17 | success |
 | 2026-10-08 | create | sqlite-job-queue | - | none | failure |
 | 2026-10-09 | create | toggle-stream | A REST management API and an SSE stream endpoint backed by an EventEmitter. | b79f531 | success |
+| 2026-10-10 | improve | toggle-stream | Added an /api/evaluate endpoint and a rolloutPercentage field to support deterministic, percentage-based server-side feature rollouts for specific user contexts. | d0b03fa | success |
