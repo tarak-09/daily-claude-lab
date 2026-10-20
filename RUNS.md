@@ -40,3 +40,4 @@ rather than manufacturing activity.
 | 2026-10-17 | create | nano-vec | Implemented an aiohttp server with batch insertions, exact KNN search via cosine similarity on a numpy index, and Write-Ahead Log data persistence. | 67e8bcf | success |
 | 2026-10-18 | improve | memo-run | Added support for output artifact caching using an `-o/--outputs` CLI flag to save and restore generated files. | 62651c0 | success |
 | 2026-10-19 | improve | dag-runner | Added 'retries' and 'retry_delay' options to tasks so that transiently failing commands can automatically re-run. | e234f11 | success |
+| 2026-10-20 | improve | lite-broker | Implemented Dead Letter Queues (DLQ) by adding receive counts and automatic routing of poison messages via a single atomic SQLite transaction. | 229a233 | success |
