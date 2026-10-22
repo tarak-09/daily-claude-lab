@@ -42,3 +42,4 @@ rather than manufacturing activity.
 | 2026-10-19 | improve | dag-runner | Added 'retries' and 'retry_delay' options to tasks so that transiently failing commands can automatically re-run. | e234f11 | success |
 | 2026-10-20 | improve | lite-broker | Implemented Dead Letter Queues (DLQ) by adding receive counts and automatic routing of poison messages via a single atomic SQLite transaction. | 229a233 | success |
 | 2026-10-21 | skip | - | - | none | failure |
+| 2026-10-22 | improve | lite-broker | Added Pub/Sub topics to enable SNS-like message fanout across multiple subscribed queues. | 4c6d3af | success |
