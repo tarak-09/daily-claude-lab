@@ -43,3 +43,4 @@ rather than manufacturing activity.
 | 2026-10-20 | improve | lite-broker | Implemented Dead Letter Queues (DLQ) by adding receive counts and automatic routing of poison messages via a single atomic SQLite transaction. | 229a233 | success |
 | 2026-10-21 | skip | - | - | none | failure |
 | 2026-10-22 | improve | lite-broker | Added Pub/Sub topics to enable SNS-like message fanout across multiple subscribed queues. | 4c6d3af | success |
+| 2026-10-23 | improve | endpoint-pulse | Added support for response payload assertions using JSONPath and regex in the YAML configuration. | de8831e | success |
