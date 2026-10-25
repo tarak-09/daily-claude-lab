@@ -45,3 +45,4 @@ rather than manufacturing activity.
 | 2026-10-22 | improve | lite-broker | Added Pub/Sub topics to enable SNS-like message fanout across multiple subscribed queues. | 4c6d3af | success |
 | 2026-10-23 | improve | endpoint-pulse | Added support for response payload assertions using JSONPath and regex in the YAML configuration. | de8831e | success |
 | 2026-10-24 | improve | toggle-stream | Added rule-based targeting allowing feature flags to evaluate segment-specific contexts using attributes and logical operators. | 694defb | success |
+| 2026-10-25 | improve | toggle-stream | Replaced the in-memory feature flag Map with synchronous SQLite persistence using `better-sqlite3` to ensure durable state across service restarts. | 93d9f99 | success |
