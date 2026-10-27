@@ -47,3 +47,4 @@ rather than manufacturing activity.
 | 2026-10-24 | improve | toggle-stream | Added rule-based targeting allowing feature flags to evaluate segment-specific contexts using attributes and logical operators. | 694defb | success |
 | 2026-10-25 | improve | toggle-stream | Replaced the in-memory feature flag Map with synchronous SQLite persistence using `better-sqlite3` to ensure durable state across service restarts. | 93d9f99 | success |
 | 2026-10-26 | improve | nano-vec | Implemented Write-Ahead Log (WAL) compaction and snapshotting via a `/snapshot` endpoint and optional background task to prevent infinite log growth. | 095f662 | success |
+| 2026-10-27 | improve | nano-vec | Added a soft-deletion mechanism and a /delete HTTP endpoint to remove vectors by ID, including WAL persistence and snapshot pruning. | 292e8b7 | success |
