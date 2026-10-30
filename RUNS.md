@@ -50,3 +50,4 @@ rather than manufacturing activity.
 | 2026-10-27 | improve | nano-vec | Added a soft-deletion mechanism and a /delete HTTP endpoint to remove vectors by ID, including WAL persistence and snapshot pruning. | 292e8b7 | success |
 | 2026-10-28 | improve | stat-pump | Added parsing support for Telegraf-style tags, merging them seamlessly with existing DogStatsD tag parsing logic. | c2be195 | success |
 | 2026-10-29 | skip | - | - | none | failure |
+| 2026-10-30 | improve | load-weaver | Added support for custom HTTP methods, request headers, and request body payloads to enable testing complex POST/PUT REST endpoints. | bb0e078 | success |
