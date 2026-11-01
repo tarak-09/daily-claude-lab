@@ -52,3 +52,4 @@ rather than manufacturing activity.
 | 2026-10-29 | skip | - | - | none | failure |
 | 2026-10-30 | improve | load-weaver | Added support for custom HTTP methods, request headers, and request body payloads to enable testing complex POST/PUT REST endpoints. | bb0e078 | success |
 | 2026-10-31 | improve | circuit-proxy | Added an IP-based token bucket rate limiter as an asynchronous middleware to protect upstreams from client traffic spikes. | 1d66ea8 | success |
+| 2026-11-01 | improve | circuit-proxy | Added a stale-cache fallback mechanism that returns the most recently cached successful response for rejected GET requests when circuit breakers trip open. | 4dffac3 | success |
