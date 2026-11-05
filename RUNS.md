@@ -56,3 +56,4 @@ rather than manufacturing activity.
 | 2026-11-02 | improve | circuit-proxy | Added an active background asyncio task that periodically pings a configurable health endpoint for each backend service, preemptively forcing the corresponding circuit breaker OPEN upon failure. | 3e26ee5 | success |
 | 2026-11-03 | improve | nano-vec | Optimized vector deletion from O(N) to O(1) and implemented upsert semantics using an in-memory id_map. | 61aa94b | success |
 | 2026-11-04 | skip | - | - | none | failure |
+| 2026-11-05 | improve | lite-broker | Add HTTP Webhook push subscriptions to topics, automatically pushing published messages to registered URLs. | 3dca6ef | success |
