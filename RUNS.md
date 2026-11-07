@@ -58,3 +58,4 @@ rather than manufacturing activity.
 | 2026-11-04 | skip | - | - | none | failure |
 | 2026-11-05 | improve | lite-broker | Add HTTP Webhook push subscriptions to topics, automatically pushing published messages to registered URLs. | 3dca6ef | success |
 | 2026-11-06 | skip | - | - | none | failure |
+| 2026-11-07 | improve | chaos-proxy | Implemented a token-bucket based bandwidth throttler to accurately limit transfer rates and gracefully handle dynamic configuration changes via the management API. | 9c5ffc9 | success |
