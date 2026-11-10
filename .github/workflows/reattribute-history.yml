@@ -1,0 +1,164 @@
+# One-time cleanup so each repository's contributor list shows only you.
+#
+# GitHub builds a repository's contributor list from the commit authors on its
+# default branch. The lab used to commit as github-actions[bot], so the bot is
+# listed on every portfolio repository; new commits are made as you, but the
+# old ones keep the bot listed until they are rewritten.
+#
+# For each repository this clones every branch and tag, rewrites commits by
+# github-actions[bot] (and by any extra email you list) so they are authored
+# and committed by the owner of GH_PROFILE_TOKEN, deletes every
+# Co-authored-by trailer, and, only when you type REWRITE, force-pushes the
+# result. File contents and commit dates are unchanged; every commit SHA
+# changes, so any clone made before the rewrite must be re-cloned or reset.
+#
+# Repositories with open pull requests are skipped: rewriting the history an
+# open PR is based on would break it. GitHub refreshes contributor data within
+# about 24 hours of the push.
+
+name: reattribute-history
+
+on:
+  workflow_dispatch:
+    inputs:
+      repos:
+        description: "Repository names separated by spaces, or 'portfolio' for every repo tagged with the topic"
+        type: string
+        default: portfolio
+      extra_emails:
+        description: "Optional: other commit emails to re-attribute to you, separated by spaces"
+        type: string
+        default: ""
+      confirm:
+        description: "Type REWRITE to force-push. Anything else is a dry run that changes nothing."
+        type: string
+        default: ""
+
+# Never at the same time as the daily lab.
+concurrency:
+  group: engineering-lab
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions: {}
+    env:
+      GH_TOKEN: ${{ secrets.GH_PROFILE_TOKEN }}
+      TOPIC: daily-gemini-project
+      REPOS_INPUT: ${{ inputs.repos }}
+      EXTRA_EMAILS: ${{ inputs.extra_emails }}
+      CONFIRM: ${{ inputs.confirm }}
+      COMMIT_NAME: ${{ vars.COMMIT_NAME }}
+      COMMIT_EMAIL: ${{ vars.COMMIT_EMAIL }}
+      GIT_TERMINAL_PROMPT: "0"
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install git-filter-repo
+        run: python -m pip install --quiet git-filter-repo==2.47.0
+
+      - name: Rewrite authorship
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+
+          # The same identity the daily lab commits with.
+          USER_JSON="$(gh api user)"
+          OWNER="$(jq -r .login <<<"$USER_JSON")"
+          NAME="${COMMIT_NAME:-$(jq -r '.name // empty' <<<"$USER_JSON")}"
+          NAME="${NAME:-$OWNER}"
+          EMAIL="${COMMIT_EMAIL:-$(jq -r .id <<<"$USER_JSON")+$OWNER@users.noreply.github.com}"
+
+          if [ "$REPOS_INPUT" = portfolio ]; then
+            mapfile -t REPOS < <(gh repo list "$OWNER" --topic "$TOPIC" --no-archived --source \
+              --limit 200 --json name --jq '.[].name')
+          else
+            read -r -a REPOS <<<"$REPOS_INPUT"
+          fi
+          if [ "${#REPOS[@]}" -eq 0 ]; then
+            echo "::error::no repositories to process"
+            exit 1
+          fi
+
+          MAILMAP="$RUNNER_TEMP/mailmap"
+          printf '%s <%s> <%s>\n' "$NAME" "$EMAIL" '41898282+github-actions[bot]@users.noreply.github.com' > "$MAILMAP"
+          for extra in $EXTRA_EMAILS; do
+            if [[ "$extra" != *@* ]]; then
+              echo "::error::'$extra' is not an email address"
+              exit 1
+            fi
+            printf '%s <%s> <%s>\n' "$NAME" "$EMAIL" "$extra" >> "$MAILMAP"
+          done
+
+          # Delete Co-authored-by trailers (filter-repo passes each message as
+          # bytes and expects bytes back). Messages without one stay identical.
+          STRIP='import re
+          new = re.sub(rb"(?im)^[ \t]*co-authored-by:[^\n]*(\n|$)", b"", message)
+          return message if new == message else new.rstrip(b"\n") + b"\n"'
+
+          authors() {
+            git -C "$1" log --all --format='%an' | sort | uniq -c | sort -rn \
+              | awk '{ c = $1; $1 = ""; printf "%s%s ×%s", (NR > 1 ? ", " : ""), substr($0, 2), c }'
+          }
+
+          if [ "$CONFIRM" = REWRITE ]; then MODE=rewrite; else MODE="dry run"; fi
+          {
+            echo "## reattribute-history: $MODE"
+            echo
+            echo "Commits by github-actions[bot]${EXTRA_EMAILS:+ and the listed emails} become \`$NAME <$EMAIL>\`; Co-authored-by trailers are removed."
+            echo
+            echo "| repository | result | commit authors before | after |"
+            echo "| --- | --- | --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          FAILED=0
+          for REPO in "${REPOS[@]}"; do
+            if ! [[ "$REPO" =~ ^[A-Za-z0-9._-]+$ ]]; then
+              echo "::error::'$REPO' is not a repository name"
+              FAILED=1
+              continue
+            fi
+            FULL="$OWNER/$REPO"
+            OPEN="$(gh pr list -R "$FULL" --state open --json number --jq length)"
+            if [ "$OPEN" != 0 ]; then
+              echo "::warning::$FULL has $OPEN open pull request(s); skipped. Merge or close them, then run again."
+              echo "| $REPO | skipped: $OPEN open pull request(s) | | |" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+
+            DIR="$RUNNER_TEMP/rewrite/$REPO.git"
+            git clone -q --bare "https://github.com/$FULL.git" "$DIR"
+            BEFORE="$(authors "$DIR")"
+            REFS_BEFORE="$(git -C "$DIR" show-ref)"
+            # --force: this is a throwaway clone made a moment ago.
+            git -C "$DIR" filter-repo --force --quiet --mailmap "$MAILMAP" --message-callback "$STRIP"
+            AFTER="$(authors "$DIR")"
+
+            if [ "$REFS_BEFORE" = "$(git -C "$DIR" show-ref)" ]; then
+              RESULT="already clean"
+            elif [ "$MODE" = rewrite ]; then
+              if git -C "$DIR" push -q --force --all "https://github.com/$FULL.git" \
+                 && git -C "$DIR" push -q --force --tags "https://github.com/$FULL.git"; then
+                RESULT="rewritten and force-pushed"
+              else
+                echo "::error::push to $FULL failed (branch protection, or the token lacks the workflow scope for repos with workflow files)"
+                RESULT="push failed"
+                FAILED=1
+              fi
+            else
+              RESULT="would be rewritten (dry run)"
+            fi
+            echo "$FULL: $RESULT"
+            echo "| $REPO | $RESULT | $BEFORE | $AFTER |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          if [ "$MODE" != rewrite ]; then
+            echo "Dry run only. Run again with confirm = REWRITE to force-push."
+          fi
+          exit "$FAILED"

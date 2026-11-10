@@ -62,3 +62,16 @@ rather than manufacturing activity.
 | 2026-11-08 | improve | endpoint-pulse | Added TLS certificate expiration checking to optionally fail health checks if the server's certificate expires within a specified threshold. | 024c6af | success |
 | 2026-11-09 | improve | nano-vec | Added Euclidean distance metric for exact-match metadata filtering and vector search. | 505b4fe | success |
 | 2026-11-10 | skip | - | - | none | failure |
+
+The `skip` rows marked `failure` above are runs that failed before a decision
+was recorded (usually in the decide step); the old ledger wrote `skip` for them
+by default. None was a deliberate skip.
+
+## Pull-request mode (from 2026-11-11)
+
+The lab no longer creates repositories or pushes to default branches. Each
+row is one run: a pull request opened (`improve`), a follow-up commit or reply
+on an open one (`revise`), or nothing (`skip`, with the reason).
+
+| date | action | repo | change | pull request | status |
+| --- | --- | --- | --- | --- | --- |

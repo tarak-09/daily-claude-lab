@@ -1,0 +1,4 @@
+# Normalise text files to LF in the repository.
+* text=auto
+# Shell scripts must keep LF even in a Windows checkout, or bash fails on \r.
+*.sh text eol=lf
