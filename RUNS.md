@@ -88,3 +88,4 @@ on an open one (`revise`), or nothing (`skip`, with the reason).
 | 2026-11-21 | skip | - | no eligible repository: history still lists other contributors, run the reattribute-history workflow once | - | success |
 | 2026-11-22 | skip | - | no eligible repository: history still lists other contributors, run the reattribute-history workflow once | - | success |
 | 2026-11-23 | skip | - | no eligible repository: history still lists other contributors, run the reattribute-history workflow once | - | success |
+| 2026-11-24 | skip | - | no eligible repository: history still lists other contributors, run the reattribute-history workflow once | - | success |
